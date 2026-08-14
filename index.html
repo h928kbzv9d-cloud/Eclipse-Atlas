@@ -1,0 +1,724 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Eclipse 2026 — Total Solar Eclipse Over Europe, August 12, 2026</title>
+<meta name="description" content="A live tracker for the August 12, 2026 total solar eclipse across Greenland, Iceland, and Spain, with a deep partial eclipse over the rest of Europe: countdown, path map, city timings, safety guidance. Available in English, German, and French." />
+<meta property="og:title" content="Eclipse 2026 — Total Solar Eclipse Tracker for Europe" />
+<meta property="og:description" content="Countdown, path map, city timings, and how to watch the August 12, 2026 total solar eclipse safely across Europe." />
+<meta property="og:type" content="website" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet" />
+
+<link href="https://cdn.jsdelivr.net/npm/maplibre-gl@4/dist/maplibre-gl.css" rel="stylesheet" />
+
+<link rel="stylesheet" href="./base.css" />
+<link rel="stylesheet" href="./style.css" />
+
+<script>
+  (function () {
+    var d = matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', d);
+  })();
+</script>
+</head>
+<body>
+
+<a class="sr-only" href="#main">Skip to content</a>
+
+<header class="header" id="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="#top">
+      <svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.35"/>
+        <circle cx="20" cy="20" r="9" fill="currentColor"/>
+        <circle cx="24.6" cy="16.8" r="9" fill="var(--color-bg)"/>
+      </svg>
+      <span>Eclipse 2026<span class="brand-sub">Aug 12 · Europe</span></span>
+    </a>
+    <nav class="nav">
+      <ul class="nav-links">
+        <li><a href="#countdown" data-i18n="nav.countdown">Countdown</a></li>
+        <li><a href="#map" data-i18n="nav.map">Path Map</a></li>
+        <li><a href="#cities" data-i18n="nav.cities">City Times</a></li>
+        <li><a href="#safety" data-i18n="nav.safety">Safety</a></li>
+        <li><a href="#watch" data-i18n="nav.watch">Watch Live</a></li>
+      </ul>
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button class="lang-btn" data-lang="en" aria-pressed="true">EN</button>
+        <button class="lang-btn" data-lang="de" aria-pressed="false">DE</button>
+        <button class="lang-btn" data-lang="fr" aria-pressed="false">FR</button>
+      </div>
+      <button class="theme-toggle" data-theme-toggle aria-label="Switch to light mode">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="nav-toggle" aria-label="Open menu" id="nav-toggle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+  <canvas class="hero-stars" id="starfield" aria-hidden="true"></canvas>
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow" data-i18n="hero.eyebrow">Wednesday, August 12, 2026</p>
+        <h1 class="hero-headline" data-i18n="hero.headline">The Moon will <em>blot out</em> the Sun over Europe.</h1>
+        <p class="hero-sub" data-i18n="hero.sub">A total solar eclipse sweeps from the Arctic across Greenland and Iceland to northern Spain.</p>
+        <div class="hero-actions">
+          <a href="#cities" class="btn btn--primary">
+            <span data-i18n="hero.cta1">Find your local time</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a href="#safety" class="btn btn--ghost" data-i18n="hero.cta2">Viewing safety</a>
+        </div>
+        <div class="hero-meta">
+          <span class="pill" data-i18n="hero.pill1">Greenland</span>
+          <span class="pill" data-i18n="hero.pill2">Iceland</span>
+          <span class="pill" data-i18n="hero.pill3">Northern &amp; NE Spain</span>
+          <span class="pill" data-i18n="hero.pill4">Balearic Islands</span>
+        </div>
+
+        <div class="countdown" id="countdown">
+          <p class="countdown-label" id="countdown-label" data-i18n="countdown.label">Time to global maximum eclipse</p>
+          <div class="countdown-grid">
+            <div class="countdown-unit"><strong id="cd-days">–</strong><span data-i18n="countdown.days">Days</span></div>
+            <div class="countdown-unit"><strong id="cd-hours">–</strong><span data-i18n="countdown.hours">Hours</span></div>
+            <div class="countdown-unit"><strong id="cd-mins">–</strong><span data-i18n="countdown.mins">Min</span></div>
+            <div class="countdown-unit"><strong id="cd-secs">–</strong><span data-i18n="countdown.secs">Sec</span></div>
+          </div>
+          <p class="countdown-note" data-i18n="countdown.note">Counting down to 17:46 UTC on Aug 12.</p>
+        </div>
+      </div>
+
+      <figure class="hero-visual">
+        <img src="https://svs.gsfc.nasa.gov/vis/a010000/a011100/a011133/DSC_5046.jpg" alt="The sun's corona blazing around the dark disc of the moon during a total solar eclipse" loading="eager" />
+        <figcaption data-i18n="hero.visual.caption">Total solar eclipse corona, Nov. 2012 — Image: NASA / Romeo Durscher.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FACT STRIP ============ -->
+<section class="facts" aria-label="Key facts">
+  <div class="container facts-grid">
+    <div class="fact" data-reveal><strong data-i18n="fact1.value">2m 18s</strong><span data-i18n="fact1.label">Longest totality</span></div>
+    <div class="fact" data-reveal><strong data-i18n="fact2.value">3</strong><span data-i18n="fact2.label">Landmasses</span></div>
+    <div class="fact" data-reveal><strong data-i18n="fact3.value">1999</strong><span data-i18n="fact3.label">Last total eclipse</span></div>
+    <div class="fact" data-reveal><strong data-i18n="fact4.value">24</strong><span data-i18n="fact4.label">Cities tracked</span></div>
+  </div>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div data-reveal>
+        <p class="eyebrow" data-i18n="about.eyebrow">What's happening</p>
+        <h2 class="section-title" data-i18n="about.title">A rare Arctic-to-Atlantic eclipse</h2>
+        <div class="about-body">
+          <p data-i18n="about.p1">Eclipse path description.</p>
+          <p class="pull-quote" data-i18n="about.quote">Pull quote.</p>
+          <p data-i18n="about.p2">Partial eclipse across Europe description.</p>
+          <p data-i18n="about.p3">Perseids note.</p>
+        </div>
+      </div>
+      <figure class="about-visual" data-reveal>
+        <img src="https://science.nasa.gov/wp-content/uploads/2023/09/eclipse-2024-corona-lg.jpg" onerror="this.onerror=null;this.src='https://svs.gsfc.nasa.gov/vis/a010000/a011100/a011133/DSC_5046.jpg'" alt="Solar prominences visible around the edge of the moon during totality" />
+        <figcaption data-i18n="about.visual.caption">Corona and prominences, Dallas, April 2024.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MAP ============ -->
+<section class="map-section" id="map">
+  <div class="container">
+    <p class="eyebrow" data-i18n="map.eyebrow">Where to stand</p>
+    <h2 class="section-title" data-i18n="map.title">Path of totality across Europe</h2>
+    <p class="section-lede" data-i18n="map.lede">Map description.</p>
+    <div class="map-wrap" data-reveal>
+      <div id="eclipse-map"></div>
+    </div>
+    <div class="map-legend">
+      <span><span class="legend-dot" style="background:#f0a93c"></span><span data-i18n="map.legend1">Totality path &amp; cities</span></span>
+      <span><span class="legend-dot" style="background:#5fd0dd"></span><span data-i18n="map.legend2">Notable partial-eclipse cities</span></span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CITY TABLE ============ -->
+<section id="cities">
+  <div class="container">
+    <p class="eyebrow" data-i18n="cities.eyebrow">Plan your viewing</p>
+    <h2 class="section-title" data-i18n="cities.title">Local eclipse times by European city</h2>
+    <p class="section-lede" data-i18n="cities.lede">Table description.</p>
+
+    <div class="tabs" role="tablist">
+      <button class="tab-btn" role="tab" aria-selected="true" data-tab="total" data-i18n="cities.tab.total">Total eclipse cities</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="partial" data-i18n="cities.tab.partial">Partial eclipse across Europe</button>
+    </div>
+
+    <div class="tab-panel is-active" data-panel="total">
+      <div class="table-scroll">
+        <table class="eclipse-table">
+          <thead>
+            <tr>
+              <th data-i18n="th.city">City</th>
+              <th data-i18n="th.partialBegins">Partial begins</th>
+              <th data-i18n="th.totalityBegins">Totality begins</th>
+              <th data-i18n="th.max">Max</th>
+              <th data-i18n="th.totalityEnds">Totality ends</th>
+              <th data-i18n="th.partialEnds">Partial ends</th>
+              <th data-i18n="th.totality">Totality</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="locality">Ísafjörður<span class="country" data-i18n-country="iceland">Iceland</span></td><td>16:43</td><td>17:44</td><td>17:45</td><td>17:46</td><td>18:44</td><td><span class="badge-total">1m 31s</span></td></tr>
+            <tr><td class="locality">Snæfellsjökull<span class="country" data-i18n-country="iceland">Iceland</span></td><td>16:45</td><td>17:45</td><td>17:45</td><td>17:47</td><td>18:46</td><td><span class="badge-total">2m 10s</span></td></tr>
+            <tr><td class="locality">Reykjavík<span class="country" data-i18n-country="iceland">Iceland</span></td><td>16:47</td><td>17:48</td><td>17:49</td><td>17:49</td><td>18:48</td><td><span class="badge-total">1m 01s</span></td></tr>
+            <tr><td class="locality">A Coruña<span class="country" data-i18n-country="spain">Spain</span></td><td>19:29</td><td>20:26</td><td>20:26</td><td>20:27</td><td>21:18</td><td><span class="badge-total">1m 15s</span></td></tr>
+            <tr><td class="locality">Gijón<span class="country" data-i18n-country="spain">Spain</span></td><td>19:31</td><td>20:26</td><td>20:26</td><td>20:28</td><td>21:19</td><td><span class="badge-total">1m 46s</span></td></tr>
+            <tr><td class="locality">Santander<span class="country" data-i18n-country="spain">Spain</span></td><td>19:31</td><td>20:27</td><td>20:27</td><td>20:28</td><td>21:20</td><td><span class="badge-total">1m 04s</span></td></tr>
+            <tr><td class="locality">Bilbao<span class="country" data-i18n-country="spain">Spain</span></td><td>19:32</td><td>20:27</td><td>20:27</td><td>20:28</td><td>21:20</td><td><span class="badge-total">~1m 30s</span></td></tr>
+            <tr><td class="locality">Burgos<span class="country" data-i18n-country="spain">Spain</span></td><td>19:33</td><td>20:28</td><td>20:28</td><td>20:29</td><td>21:20</td><td><span class="badge-total">1m 44s</span></td></tr>
+            <tr><td class="locality">León<span class="country" data-i18n-country="spain">Spain</span></td><td>19:32</td><td>20:28</td><td>20:29</td><td>20:30</td><td>21:22</td><td><span class="badge-total">1m 48s</span></td></tr>
+            <tr><td class="locality">Zaragoza<span class="country" data-i18n-country="spain">Spain</span></td><td>19:34</td><td>20:29</td><td>20:29</td><td>20:30</td><td>21:07*</td><td><span class="badge-total">1m 23s</span></td></tr>
+            <tr><td class="locality">Valladolid<span class="country" data-i18n-country="spain">Spain</span></td><td>19:33</td><td>20:29</td><td>20:30</td><td>20:31</td><td>21:22</td><td><span class="badge-total">1m 26s</span></td></tr>
+            <tr><td class="locality">Valencia<span class="country" data-i18n-country="spain">Spain</span></td><td>19:38</td><td>20:32</td><td>20:32</td><td>20:33</td><td>21:01*</td><td><span class="badge-total">0m 58s</span></td></tr>
+            <tr><td class="locality">Palma de Mallorca<span class="country" data-i18n-country="spain_balearic">Spain, Balearic Islands</span></td><td>19:38</td><td>20:31</td><td>20:31</td><td>20:31</td><td>20:59*</td><td><span class="badge-total">1m 36s</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-note" data-i18n="table.note.total">Notes and sources.</p>
+    </div>
+
+    <div class="tab-panel" data-panel="partial">
+      <div class="table-scroll">
+        <table class="eclipse-table">
+          <thead>
+            <tr>
+              <th data-i18n="th.city">City</th>
+              <th data-i18n="th.region">Country</th>
+              <th data-i18n="th.partialBegins">Partial begins</th>
+              <th data-i18n="th.max">Max</th>
+              <th data-i18n="th.partialEnds">Partial ends</th>
+              <th data-i18n="th.coverage">Coverage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="locality">Dublin</td><td data-i18n-country="ireland">Ireland</td><td>18:13</td><td>19:11</td><td>20:05</td><td>94%</td></tr>
+            <tr><td class="locality">London</td><td data-i18n-country="uk">United Kingdom</td><td>18:17</td><td>19:13</td><td>20:06</td><td>91%</td></tr>
+            <tr><td class="locality">Edinburgh</td><td data-i18n-country="uk">United Kingdom</td><td>18:08</td><td>19:05</td><td>20:00</td><td>91%</td></tr>
+            <tr><td class="locality">Lisbon</td><td data-i18n-country="portugal">Portugal</td><td>18:39</td><td>19:36</td><td>20:29</td><td>95%</td></tr>
+            <tr><td class="locality">Porto</td><td data-i18n-country="portugal">Portugal</td><td>18:34</td><td>19:31</td><td>20:25</td><td>98%</td></tr>
+            <tr><td class="locality">Madrid</td><td data-i18n-country="spain">Spain</td><td>19:37</td><td>20:32</td><td>21:16*</td><td>~100%</td></tr>
+            <tr><td class="locality">Barcelona</td><td data-i18n-country="spain">Spain</td><td>19:35</td><td>20:29</td><td>20:56*</td><td>99%</td></tr>
+            <tr><td class="locality">Paris</td><td data-i18n-country="france">France</td><td>19:22</td><td>20:17</td><td>21:09</td><td>92%</td></tr>
+            <tr><td class="locality">Nantes</td><td data-i18n-country="france">France</td><td>19:24</td><td>20:20</td><td>21:13</td><td>96%</td></tr>
+            <tr><td class="locality">Lyon</td><td data-i18n-country="france">France</td><td>19:27</td><td>20:21</td><td>21:11</td><td>94%</td></tr>
+            <tr><td class="locality">Marseille</td><td data-i18n-country="france">France</td><td>19:31</td><td>20:25</td><td>21:15</td><td>96%</td></tr>
+            <tr><td class="locality">Strasbourg</td><td data-i18n-country="france">France</td><td>19:23</td><td>20:16</td><td>21:07</td><td>90%</td></tr>
+            <tr><td class="locality">Bordeaux</td><td data-i18n-country="france">France</td><td>19:29</td><td>20:25</td><td>21:17</td><td>98%</td></tr>
+            <tr><td class="locality">Toulouse</td><td data-i18n-country="france">France</td><td>19:31</td><td>20:26</td><td>21:17</td><td>98%</td></tr>
+            <tr><td class="locality">Brussels</td><td data-i18n-country="belgium">Belgium</td><td>19:19</td><td>20:14</td><td>21:06</td><td>90%</td></tr>
+            <tr><td class="locality">Amsterdam</td><td data-i18n-country="netherlands">Netherlands</td><td>19:16</td><td>20:11</td><td>21:03</td><td>88%</td></tr>
+            <tr><td class="locality">Luxembourg</td><td data-i18n-country="luxembourg">Luxembourg</td><td>19:21</td><td>20:15</td><td>20:58*</td><td>90%</td></tr>
+            <tr><td class="locality">Berlin</td><td data-i18n-country="germany">Germany</td><td>19:15</td><td>20:08</td><td>20:38*</td><td>85%</td></tr>
+            <tr><td class="locality">Frankfurt</td><td data-i18n-country="germany">Germany</td><td>19:20</td><td>20:13</td><td>20:49*</td><td>88%</td></tr>
+            <tr><td class="locality">Munich</td><td data-i18n-country="germany">Germany</td><td>19:22</td><td>20:15</td><td>20:32*</td><td>89%</td></tr>
+            <tr><td class="locality">Hamburg</td><td data-i18n-country="germany">Germany</td><td>—</td><td>20:07</td><td>—</td><td>85%</td></tr>
+            <tr><td class="locality">Zurich</td><td data-i18n-country="switzerland">Switzerland</td><td>19:25</td><td>20:18</td><td>20:43*</td><td>91%</td></tr>
+            <tr><td class="locality">Geneva</td><td data-i18n-country="switzerland">Switzerland</td><td>19:26</td><td>20:20</td><td>20:49*</td><td>93%</td></tr>
+            <tr><td class="locality">Vienna</td><td data-i18n-country="austria">Austria</td><td>19:22</td><td>20:10</td><td>20:14*</td><td>85%</td></tr>
+            <tr><td class="locality">Milan</td><td data-i18n-country="italy">Italy</td><td>19:27</td><td>20:20</td><td>21:11</td><td>92%</td></tr>
+            <tr><td class="locality">Rome</td><td data-i18n-country="italy">Italy</td><td>19:32</td><td>20:11</td><td>20:15*</td><td>69%</td></tr>
+            <tr><td class="locality">Stockholm</td><td data-i18n-country="sweden">Sweden</td><td>19:03</td><td>19:56</td><td>20:46*</td><td>81%</td></tr>
+            <tr><td class="locality">Copenhagen</td><td data-i18n-country="denmark">Denmark</td><td>19:10</td><td>20:04</td><td>20:52*</td><td>84%</td></tr>
+            <tr><td class="locality">Oslo</td><td data-i18n-country="norway">Norway</td><td>19:03</td><td>19:57</td><td>20:49</td><td>83%</td></tr>
+            <tr><td class="locality">Warsaw</td><td data-i18n-country="poland">Poland</td><td>19:15</td><td>20:03</td><td>20:07*</td><td>82%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-note" data-i18n="table.note.partial">Notes and sources.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SAFETY ============ -->
+<section class="safety-section" id="safety">
+  <div class="container">
+    <p class="eyebrow" data-i18n="safety.eyebrow">Before you look up</p>
+    <h2 class="section-title" data-i18n="safety.title">Viewing safely</h2>
+    <p class="section-lede" data-i18n="safety.lede">Safety intro.</p>
+
+    <div class="safety-grid">
+      <div class="card safety-card" data-reveal>
+        <div class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></div>
+        <h3 data-i18n="safety.card1.title">Certified solar filters only</h3>
+        <p data-i18n="safety.card1.desc">Use eclipse glasses.</p>
+      </div>
+      <div class="card safety-card" data-reveal>
+        <div class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="9" width="18" height="10" rx="2"/><path d="M8 9V6a4 4 0 018 0v3"/></svg></div>
+        <h3 data-i18n="safety.card2.title">Indirect projection works too</h3>
+        <p data-i18n="safety.card2.desc">Pinhole projector.</p>
+      </div>
+      <div class="card safety-card" data-reveal>
+        <div class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+        <h3 data-i18n="safety.card3.title">Photographing the eclipse</h3>
+        <p data-i18n="safety.card3.desc">Camera filters.</p>
+      </div>
+    </div>
+
+    <div class="safety-warning" data-reveal>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <p data-i18n="safety.warning">Warning about partial eclipse.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WATCH LIVE ============ -->
+<section class="watch-section" id="watch">
+  <div class="container">
+    <p class="eyebrow" data-i18n="watch.eyebrow">Not in the path?</p>
+    <h2 class="section-title" data-i18n="watch.title">Watch it live online</h2>
+    <p class="section-lede" data-i18n="watch.lede">Livestream description.</p>
+
+    <div class="watch-grid">
+      <div class="card watch-card" data-reveal>
+        <span class="platform" data-i18n="watch.card1.platform">NASA+ / NASA TV</span>
+        <h3 data-i18n="watch.card1.title">NASA official broadcast</h3>
+        <p data-i18n="watch.card1.desc">Live coverage.</p>
+        <a class="btn btn--primary" href="https://www.nasa.gov/live" target="_blank" rel="noopener noreferrer" data-i18n="watch.card1.btn">Watch on NASA</a>
+      </div>
+      <div class="card watch-card" data-reveal>
+        <span class="platform" data-i18n="watch.card2.platform">timeanddate.com</span>
+        <h3 data-i18n="watch.card2.title">Time and Date live stream</h3>
+        <p data-i18n="watch.card2.desc">Live from León.</p>
+        <a class="btn btn--primary" href="https://www.timeanddate.com/live/eclipse-solar-2026-august-12" target="_blank" rel="noopener noreferrer" data-i18n="watch.card2.btn">Watch on Time and Date</a>
+      </div>
+      <div class="card watch-card" data-reveal>
+        <span class="platform" data-i18n="watch.card3.platform">ESA Web TV</span>
+        <h3 data-i18n="watch.card3.title">European Space Agency</h3>
+        <p data-i18n="watch.card3.desc">Coverage from Iceland.</p>
+        <a class="btn btn--primary" href="https://www.esa.int/ESA_Multimedia/Live" target="_blank" rel="noopener noreferrer" data-i18n="watch.card3.btn">Watch on ESA</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section id="faq">
+  <div class="container container--default">
+    <p class="eyebrow" data-i18n="faq.eyebrow">Good to know</p>
+    <h2 class="section-title" data-i18n="faq.title">Frequently asked questions</h2>
+    <div class="faq-list">
+      <div class="faq-item" data-open="false">
+        <button class="faq-question"><span data-i18n="faq.q1">Question 1</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+        <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a1">Answer 1</div></div>
+      </div>
+      <div class="faq-item" data-open="false">
+        <button class="faq-question"><span data-i18n="faq.q2">Question 2</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+        <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a2">Answer 2</div></div>
+      </div>
+      <div class="faq-item" data-open="false">
+        <button class="faq-question"><span data-i18n="faq.q3">Question 3</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+        <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a3">Answer 3</div></div>
+      </div>
+      <div class="faq-item" data-open="false">
+        <button class="faq-question"><span data-i18n="faq.q4">Question 4</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+        <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a4">Answer 4</div></div>
+      </div>
+      <div class="faq-item" data-open="false">
+        <button class="faq-question"><span data-i18n="faq.q5">Question 5</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+        <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a5">Answer 5</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="#top">
+          <svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
+            <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.35"/>
+            <circle cx="20" cy="20" r="9" fill="currentColor"/>
+            <circle cx="24.6" cy="16.8" r="9" fill="var(--color-bg)"/>
+          </svg>
+          <span>Eclipse 2026</span>
+        </a>
+        <p data-i18n="footer.tagline">Tagline.</p>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.explore">Explore</h4>
+        <ul>
+          <li><a href="#countdown" data-i18n="nav.countdown">Countdown</a></li>
+          <li><a href="#map" data-i18n="nav.map">Path map</a></li>
+          <li><a href="#cities" data-i18n="nav.cities">City times</a></li>
+          <li><a href="#safety" data-i18n="nav.safety">Safety</a></li>
+          <li><a href="#watch" data-i18n="nav.watch">Watch live</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footer.sources">Primary sources</h4>
+        <ul>
+          <li><a href="https://science.nasa.gov/eclipses/future-eclipses/total-solar-eclipse-on-august-12-2026/" target="_blank" rel="noopener noreferrer">NASA Science</a></li>
+          <li><a href="https://www.timeanddate.com/eclipse/solar/2026-august-12" target="_blank" rel="noopener noreferrer">timeanddate.com</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Solar_eclipse_of_August_12,_2026" target="_blank" rel="noopener noreferrer">Wikipedia</a></li>
+          <li><a href="https://www.afastronomie.fr/media/default/0001/28/DP_ECLIPSEinfo-web-69e1.pdf" target="_blank" rel="noopener noreferrer">Association Française d'Astronomie</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span data-i18n="footer.bottom.left">Built with Perplexity Computer.</span>
+      <span data-i18n="footer.bottom.right">© 2026 Eclipse 2026 Tracker</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4/dist/maplibre-gl.js"></script>
+<script src="./translations.js"></script>
+<script src="./app.js"></script>
+<script data-pplx-inline-edit>
+(function () {
+  if (window === window.top) return;
+
+  const allowedParentOrigins = ["https://www.perplexity.ai","https://perplexity.ai","https://testing.perplexity.ai","https://staging.perplexity.ai","https://*.preview.i.perplexity.ai","http://perplexity.localhost","http://localhost:1420","http://127.0.0.1:1420","http://localhost:3000","http://127.0.0.1:3000","http://localhost:5173","http://127.0.0.1:5173"];
+  const MAX_FONT_BYTES = 500 * 1024;
+  const MAX_TOTAL_FONT_BYTES = 2 * 1024 * 1024;
+  let scrollForwarding = false;
+  let scrollRaf = 0;
+  let trustedTopOrigin = null;
+
+  // Allow entries like "https://*.preview.i.perplexity.ai" — the wildcard
+  // matches a single DNS label (no dots), so "https://*.foo" cannot stretch
+  // across multiple labels.
+  function matchesAllowedOrigin(origin) {
+    if (!origin) return false;
+    for (const entry of allowedParentOrigins) {
+      if (!entry.includes("*")) {
+        if (entry === origin) return true;
+        continue;
+      }
+      const pattern = new RegExp(
+        "^" +
+          entry.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^.]+") +
+          "$",
+      );
+      if (pattern.test(origin)) return true;
+    }
+    return false;
+  }
+
+  // Trust decision: when the sender is same-origin-visible (event.origin is a
+  // real origin like https://www.perplexity.ai) we trust event.origin directly.
+  // When event.origin is "null" (opaque broker srcdoc), we fall back to the
+  // broker's stamped `parentOrigin` to identify the top window. The fallback
+  // is claim-only — we rely on the browser's native `targetOrigin` enforcement
+  // on the response path (see postToTrustedTop) to ensure replies can't be
+  // delivered to anyone but the actual top window of that claimed origin.
+  function getTrustedParentOrigin(event) {
+    const forwardedParentOrigin =
+      typeof event.data.parentOrigin === "string" ? event.data.parentOrigin : null;
+    const parentOrigin = event.origin === "null" ? forwardedParentOrigin : event.origin;
+    return matchesAllowedOrigin(parentOrigin) ? parentOrigin : null;
+  }
+
+  // All responses go to window.top with targetOrigin = the allowlisted origin.
+  // An attacker that iframes us inside their own null-origin broker can claim
+  // any parentOrigin they like, but the browser will drop the reply whenever
+  // the real top's origin doesn't match — so the screenshot never leaves.
+  function postToTrustedTop(message) {
+    if (!trustedTopOrigin) return;
+    try {
+      window.top.postMessage(message, trustedTopOrigin);
+    } catch (_error) {}
+  }
+
+  function inlineAll(original, clone) {
+    if (original.nodeType !== 1 || clone.nodeType !== 1) return;
+
+    try {
+      const computedStyle = getComputedStyle(original);
+      // cssText on a computed style is the serialized declaration in modern
+      // Chromium/Safari — a single read beats enumerating ~400 longhand
+      // properties. Firefox returns "" here, so we fall back on empty.
+      const serialized = computedStyle.cssText;
+      if (serialized) {
+        clone.style.cssText = serialized;
+      } else {
+        const parts = new Array(computedStyle.length);
+        for (let index = 0; index < computedStyle.length; index += 1) {
+          const property = computedStyle[index];
+          parts[index] = `${property}:${computedStyle.getPropertyValue(property)};`;
+        }
+        clone.style.cssText = parts.join("");
+      }
+    } catch (_error) {}
+
+    const originalChildren = original.children;
+    const clonedChildren = clone.children;
+    for (
+      let index = 0;
+      index < originalChildren.length && index < clonedChildren.length;
+      index += 1
+    ) {
+      inlineAll(originalChildren[index], clonedChildren[index]);
+    }
+  }
+
+  function extractFontUrl(srcValue) {
+    const matches = [
+      ...srcValue.matchAll(
+        /url\(["']?([^"')]+)["']?\)(?:\s*format\(["']?([^"')]+)["']?\))?/gi,
+      ),
+    ];
+    if (matches.length === 0) return null;
+    const woff2 = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff2"));
+    if (woff2) return woff2[1];
+    const woff = matches.find((m) => m[2] && m[2].toLowerCase().includes("woff"));
+    if (woff) return woff[1];
+    return matches[0][1];
+  }
+
+  // Cache resolved font URL -> data URI across captures. Fonts on a page
+  // essentially never change, and a batch run emits multiple captures back to
+  // back — without this we'd refetch + re-base64 every time.
+  const fontDataUriCache = new Map();
+  const SRC_DECLARATION_RE = /src\s*:\s*[^;}]+/i;
+
+  async function fetchAsDataUri(url) {
+    if (fontDataUriCache.has(url)) return fontDataUriCache.get(url);
+    let dataUri = null;
+    try {
+      const response = await fetch(url, { mode: "cors", credentials: "omit" });
+      if (response.ok) {
+        const blob = await response.blob();
+        if (blob.size <= MAX_FONT_BYTES) {
+          dataUri = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+              resolve(typeof reader.result === "string" ? reader.result : null);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        }
+      }
+    } catch (_error) {
+      dataUri = null;
+    }
+    fontDataUriCache.set(url, dataUri);
+    return dataUri;
+  }
+
+  function collectFontFaceRuleTexts() {
+    const rules = [];
+    for (const sheet of document.styleSheets) {
+      let cssRules;
+      try {
+        cssRules = sheet.cssRules;
+      } catch (_error) {
+        continue;
+      }
+      if (!cssRules) continue;
+      for (const rule of cssRules) {
+        const cssText = rule.cssText || "";
+        if (cssText.startsWith("@font-face")) rules.push(cssText);
+      }
+    }
+    return rules;
+  }
+
+  async function buildInlinedFontCss() {
+    const ruleTexts = collectFontFaceRuleTexts();
+    if (ruleTexts.length === 0) return null;
+
+    const resolved = ruleTexts.map((cssText) => {
+      if (!SRC_DECLARATION_RE.test(cssText)) return null;
+      const srcMatch = cssText.match(/src\s*:\s*([^;}]+)[;}]/i);
+      if (!srcMatch) return null;
+      const url = extractFontUrl(srcMatch[1]);
+      if (!url) return null;
+      try {
+        return { cssText, url: new URL(url, document.baseURI).href };
+      } catch (_error) {
+        return null;
+      }
+    });
+
+    const dataUris = await Promise.all(
+      resolved.map((entry) => (entry ? fetchAsDataUri(entry.url) : Promise.resolve(null))),
+    );
+
+    const inlined = [];
+    let totalBytes = 0;
+    for (let index = 0; index < resolved.length; index += 1) {
+      const entry = resolved[index];
+      const dataUri = dataUris[index];
+      if (!entry || !dataUri) continue;
+      const approxBytes = dataUri.length * 0.75;
+      if (totalBytes + approxBytes > MAX_TOTAL_FONT_BYTES) break;
+      totalBytes += approxBytes;
+      inlined.push(entry.cssText.replace(SRC_DECLARATION_RE, `src: url("${dataUri}")`));
+    }
+    return inlined.length > 0 ? inlined.join("\n") : null;
+  }
+
+  function stripExternal(clone) {
+    const images = clone.querySelectorAll("img");
+    for (let index = 0; index < images.length; index += 1) {
+      const src = images[index].getAttribute("src");
+      if (src && !src.startsWith("data:")) images[index].removeAttribute("src");
+    }
+
+    const elements = clone.querySelectorAll("*");
+    for (let index = 0; index < elements.length; index += 1) {
+      const style = elements[index].style.cssText;
+      if (style && style.includes("url(")) {
+        elements[index].style.cssText = style.replace(
+          /url\(["']?(?!data:)[^)"']*["']?\)/gi,
+          "none",
+        );
+      }
+    }
+  }
+
+  function emitScroll() {
+    scrollRaf = 0;
+    if (!scrollForwarding) return;
+    postToTrustedTop({
+      type: "INLINE_EDIT_SCROLL",
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+    });
+  }
+
+  window.addEventListener(
+    "scroll",
+    function () {
+      if (!scrollForwarding || scrollRaf) return;
+      scrollRaf = requestAnimationFrame(emitScroll);
+    },
+    { passive: true, capture: true },
+  );
+
+  async function handleCaptureRequest(event) {
+    const requestId = event.data.requestId;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    function postResult(dataUrl) {
+      postToTrustedTop({
+        type: "INLINE_EDIT_SCREENSHOT_RESULT",
+        requestId,
+        dataUrl,
+        scrollX,
+        scrollY,
+      });
+    }
+
+    try {
+      // Wait for any pending web fonts to resolve so both inline metrics and
+      // the @font-face inlining below see the same loaded faces.
+      if (document.fonts && document.fonts.ready) {
+        try {
+          await document.fonts.ready;
+        } catch (_error) {}
+      }
+
+      const clone = document.documentElement.cloneNode(true);
+      inlineAll(document.documentElement, clone);
+
+      const removedNodes = clone.querySelectorAll("script,link[rel=\"stylesheet\"],style");
+      for (let index = 0; index < removedNodes.length; index += 1) {
+        removedNodes[index].remove();
+      }
+
+      stripExternal(clone);
+
+      // Re-embed web fonts as data-URI @font-face rules so the SVG rasterizer
+      // can resolve them — external font URLs aren't fetched during
+      // foreignObject rendering, which would otherwise force a fallback face
+      // and change text metrics.
+      const inlinedFontCss = await buildInlinedFontCss();
+      if (inlinedFontCss) {
+        const styleEl = document.createElement("style");
+        styleEl.textContent = inlinedFontCss;
+        const head = clone.querySelector("head");
+        if (head) head.appendChild(styleEl);
+        else clone.insertBefore(styleEl, clone.firstChild);
+      }
+
+      const html = new XMLSerializer().serializeToString(clone);
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+        '<foreignObject width="100%" height="100%">' +
+        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">` +
+        `<div style="position:relative;left:-${scrollX}px;top:-${scrollY}px">` +
+        html +
+        "</div></div></foreignObject></svg>";
+      const svgUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(image, 0, 0);
+        postResult(canvas.toDataURL("image/png"));
+      };
+      image.onerror = function () {
+        postResult(null);
+      };
+      image.src = svgUrl;
+    } catch (_error) {
+      postResult(null);
+    }
+  }
+
+  window.addEventListener("message", function (event) {
+    if (!event.data) return;
+    // Only accept messages from the direct parent frame. Blocks sibling /
+    // unrelated-window postMessage senders that could otherwise reach us.
+    if (event.source !== window.parent) return;
+
+    const trustedParentOrigin = getTrustedParentOrigin(event);
+    if (!trustedParentOrigin) return;
+    trustedTopOrigin = trustedParentOrigin;
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_START") {
+      scrollForwarding = true;
+      emitScroll();
+      return;
+    }
+
+    if (event.data.type === "INLINE_EDIT_SCROLL_STOP") {
+      scrollForwarding = false;
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
+      scrollRaf = 0;
+      return;
+    }
+
+    if (event.data.type !== "INLINE_EDIT_CAPTURE_REQUEST") return;
+
+    handleCaptureRequest(event);
+  });
+})();
+
+
+</script></body>
+</html>
