@@ -9,6 +9,7 @@
 .supported-cities{margin-top:1rem;border-top:1px dashed var(--line);padding-top:0.9rem}
 .supported-cities h4{margin:0 0 .4rem}
 .supported-cities .hint{margin:0 0 .6rem;color:var(--muted);font-size:.88rem}
+.missing-hint{margin-top:0.8rem;border-top:1px dashed var(--line);padding-top:0.8rem;color:var(--muted);font-size:0.9rem}
 .supported-cities ul{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.5rem}
 .supported-city{background:var(--panel2);border:1px solid var(--line);padding:.45rem .6rem;border-radius:.5rem;cursor:pointer;color:var(--ink)}
 .supported-city:focus-visible{outline:3px solid color-mix(in srgb,var(--sun) 72%,white);outline-offset:3px}
