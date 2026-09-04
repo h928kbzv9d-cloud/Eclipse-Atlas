@@ -34,7 +34,41 @@ function renderEvents(){const shown=ECLIPSES.filter(e=> (state.classFilter==='al
 }
 function renderSelect(){$('#event-select').innerHTML=ECLIPSES.map(e=>`<option value="${e.id}">${e.label} — ${typeLabel(e.type)} — ${classLabel(e.class)}</option>`).join('');$('#event-select').value=state.eventId}
 function findSupported(place,e){if(!place||!e.cities)return null;return e.cities.find(c=>Math.abs(c.lat-place.lat)<.22&&Math.abs(c.lon-place.lon)<.22)||null}
-function renderBrief(){const e=event(),p=state.place,s=findSupported(p,e);let content;if(!p){content=`<div class="brief-empty"><span class="brief-icon">⌖</span><h3>${t('briefStartTitle')}</h3><p>${t('briefStartText')}</p></div>`}else if(s){content=`<div class="brief-top"><span class="type-badge ${s.status}">${typeLabel(s.status)}</span><span class="verified">${t('verified')}</span></div><p class="brief-kicker">${e.label} · ${t('eclipseBrief')}</p><h3>${esc(s.name)}, ${esc(s.country)}</h3><p class="brief-summary">${t('supportedSummary',{type:typeLabel(s.status).toLowerCase()})}</p><dl class="timing-grid"><div><dt>${t('maximum')}</dt><dd>${s.maximum||'—'}</dd></div><div><dt>${t('duration')}</dt><dd>${s.duration||s.coverage||'—'}</dd></div>${s.partialStart?`<div><dt>${t('partialBegins')}</dt><dd>${s.partialStart}</dd></div>`:''}${s.centralStart?`<div><dt>${t('centralBegins')}</dt><dd>${s.centralStart}</dd></div>`:''}${s.centralEnd?`<div><dt>${t('centralEnds')}</dt><dd>${s.centralEnd}</dd></div>`:''}${s.partialEnd?`<div><dt>${t('partialEnds')}</dt><dd>${s.partialEnd}</dd></div>`:''}</dl><p class="brief-disclaimer">${t('timingDisclaimer')}</p>`}else{content=`<div class="brief-top"><span class="type-badge lookup">${t('lookup')}</span></div><p class="brief-kicker">${e.label} · ${t('eclipseBrief')}</p><h3>${esc(p.name)}</h3><p class="brief-summary">${e.class==='lunar'?t('notCoveredLunar'):t('notCovered')}</p><dl class="timing-grid"><div><dt>${t('coordinates')}</dt><dd>${p.lat.toFixed(4)}°, ${p.lon.toFixed(4)}°</dd></div><div><dt>${t('datasetStatus')}</dt><dd>${t('notIncluded')}</dd></div></dl><p class="brief-disclaimer">${t('notCoveredText')}</p>`}$('#eclipse-brief').innerHTML=`${content}<div class="brief-actions"><button id="calendar-button" class="button button-primary" type="button" ${p?'':'disabled'}>${t('addCalendar')}</button><a class="button button-secondary" href="${e.source}" target="_blank" rel="noopener noreferrer">${t('viewSource')}</a></div>`;$('#calendar-button')?.addEventListener('click',exportCalendar)}
+function renderBrief(){const e=event(),p=state.place,s=findSupported(p,e);let content;const supported = (e.cities||[]).map(c=>({name:c.name,country:c.country,lat:c.lat,lon:c.lon,zoom:c.zoom||10,status:c.status,duration:c.duration,maximum:c.maximum}));
+  if(!p){
+    content=`<div class="brief-empty"><span class="brief-icon">⌖</span><h3>${t('briefStartTitle')}</h3><p>${t('briefStartText')}</p></div>`
+  } else if(s){
+    content=`<div class="brief-top"><span class="type-badge ${s.status}">${typeLabel(s.status)}</span><span class="verified">${t('verified')}</span></div>
+      <p class="brief-kicker">${e.label} · ${t('eclipseBrief')}</p>
+      <h3>${esc(s.name)}, ${esc(s.country)}</h3>
+      <p class="brief-summary">${t('supportedSummary',{type:typeLabel(s.status).toLowerCase()})}</p>
+      <dl class="timing-grid"><div><dt>${t('maximum')}</dt><dd>${s.maximum||'—'}</dd></div><div><dt>${t('duration')}</dt><dd>${s.duration||s.coverage||'—'}</dd></div>
+      ${s.partialStart?`<div><dt>${t('partialBegins')}</dt><dd>${s.partialStart}</dd></div>`:''}
+      ${s.centralStart?`<div><dt>${t('centralBegins')}</dt><dd>${s.centralStart}</dd></div>`:''}
+      ${s.centralEnd?`<div><dt>${t('centralEnds')}</dt><dd>${s.centralEnd}</dd></div>`:''}
+      ${s.partialEnd?`<div><dt>${t('partialEnds')}</dt><dd>${s.partialEnd}</dd></div>`:''}</dl>
+      <p class="brief-disclaimer">${t('timingDisclaimer')}</p>`
+  } else {
+    // Place provided but not covered by event
+    let supportedHtml='';
+    if(supported.length>0){
+      supportedHtml = `<div class="supported-cities"><h4>${t('supportedCitiesTitle')}</h4><p class="hint">${t('supportedCitiesHint')}</p><ul>` + supported.map(c=>`<li><button class="supported-city" type="button" data-lat="${c.lat}" data-lon="${c.lon}" data-name="${esc(c.name)}">${esc(c.name)}, ${esc(c.country||'')}</button></li>`).join('') + `</ul></div>`
+    } else {
+      supportedHtml = `<div class="supported-cities"><h4>${t('supportedCitiesTitle')}</h4><p class="hint">${t('supportedCitiesNone')}</p></div>`
+    }
+    content=`<div class="brief-top"><span class="type-badge lookup">${t('lookup')}</span></div>
+      <p class="brief-kicker">${e.label} · ${t('eclipseBrief')}</p>
+      <h3>${esc(p.name)}</h3>
+      <p class="brief-summary">${e.class==='lunar'?t('notCoveredLunar'):t('notCovered')}</p>
+      <dl class="timing-grid"><div><dt>${t('coordinates')}</dt><dd>${p.lat.toFixed(4)}°, ${p.lon.toFixed(4)}°</dd></div><div><dt>${t('datasetStatus')}</dt><dd>${t('notIncluded')}</dd></div></dl>
+      <p class="brief-disclaimer">${t('notCoveredText')}</p>
+      ${supportedHtml}`
+  }
+  $('#eclipse-brief').innerHTML=`${content}<div class="brief-actions"><button id="calendar-button" class="button button-primary" type="button" ${p?'':'disabled'}>${t('addCalendar')}</button><a class="button button-secondary" href="${e.source}" target="_blank" rel="noopener noreferrer">${t('viewSource')}</a></div>`;
+  // wire up supported city buttons
+  $$('.supported-city').forEach(b=>b.addEventListener('click',()=>{const name=b.dataset.name;const lat=Number(b.dataset.lat);const lon=Number(b.dataset.lon);choosePlace({name:name,lat:lat,lon:lon,zoom:10})}));
+  $('#calendar-button')?.addEventListener('click',exportCalendar)
+}
 function initMap(){if(!window.L){$('#world-map').innerHTML=`<p class="map-error">${t('mapUnavailable')}</p>`;return}map=L.map('world-map',{worldCopyJump:true}).setView([25,0],2);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);pathLayer=L.layerGroup().addTo(map);cityLayer=L.layerGroup().addTo(map);renderMap()}
 function renderMap(){if(!map)return;pathLayer.clearLayers();cityLayer.clearLayers();const e=event();
   if(e.class==='solar' && Array.isArray(e.path)){
@@ -59,7 +93,7 @@ async function searchPlaces(query){const status=$('#place-status'),out=$('#place
 function useLocation(){if(!navigator.geolocation){toast(t('geoUnavailable'));return}toast(t('locating'));navigator.geolocation.getCurrentPosition(p=>choosePlace({name:t('yourLocation'),lat:p.coords.latitude,lon:p.coords.longitude,zoom:9}),()=>toast(t('geoDenied')),{timeout:8000})}
 function exportCalendar(){const e=event(),p=state.place;const safe=(p.name||'location').replace(/[^a-z0-9]+/gi,'-').toLowerCase();const s=findSupported(p,e);const detail=s?`${typeLabel(s.status)} eclipse; maximum ${s.maximum||'see source'}; ${s.duration||s.coverage||''}`:'Exact local circumstances are not included in the Eclipse Atlas embedded dataset. See authoritative source.';const summary = `${typeLabel(e.type)} ${e.class==='lunar'?'Lunar':'Solar'} Eclipse — ${p.name}`;download(`eclipse-atlas-${e.id}-${safe}.ics`,`BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Eclipse Atlas//EN\r\nBEGIN:VEVENT\r\nUID:eclipse-atlas-${e.id}-${safe}\r\nDTSTAMP:20260831T000000Z\r\nDTSTART;VALUE=DATE:${e.id.replaceAll('-','')}\r\nSUMMARY:${summary}\r\nLOCATION:${p.name}\r\nDESCRIPTION:${detail}\r\nURL:${e.source}\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n`,'text/calendar');toast(t('calendarDone'))}
 function download(name,data,type){const b=new Blob([data],{type}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=name;document.body.append(a);a.click();a.remove();URL.revokeObjectURL(u)}
-function translate(){document.documentElement.lang=state.lang;$$('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));$$('[data-i18n-placeholder]').forEach(el=>el.placeholder=t(el.dataset.i18nPlaceholder));$('#language').value=state.lang;renderEvents();renderSelect();renderBrief();renderMap()}
+function translate(){document.documentElement.lang=state.lang;$$('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));$$('[data-i18n-placeholder]').forEach(el=>el.placeholder=t(el.dataset.i18nPlaceholder));$('#language').value=state.lang;renderEvents();renderSelect();renderBrief();renderMap();if(typeof renderSupportedCities==='function')renderSupportedCities()}
 function init(){document.documentElement.dataset.theme=state.theme;$('#field-notes').value=localStorage.getItem('ea-notes')||'';initMap();renderEvents();renderSelect();renderBrief();$('#language').onchange=e=>{state.lang=e.target.value;save();translate()};$('#theme-toggle').onclick=()=>{state.theme=state.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=state.theme;save();toast(t('themeSaved'))};$('#event-select').onchange=e=>chooseEvent(e.target.value);
   $$('.filter-chip').forEach(b=>b.onclick=()=>{state.filter=b.dataset.filter;$$('.filter-chip').forEach(x=>{const on=x===b;x.classList.toggle('active',on);x.setAttribute('aria-pressed',on)});renderEvents()});
   $$('.class-chip').forEach(b=>b.onclick=()=>{state.classFilter=b.dataset.class;$$('.class-chip').forEach(x=>{const on=x===b;x.classList.toggle('active',on);x.setAttribute('aria-pressed',on)});renderEvents()});
@@ -75,6 +109,19 @@ function init(){document.documentElement.dataset.theme=state.theme;$('#field-not
   ];
   function renderNews(){const container=$('#news-cards');if(!container)return;container.innerHTML=NEWS.map(n=>`<article class="news-card"><h3>${t(n.titleKey)}</h3><p class="publisher">${n.publisher} · <span class="label">${t(n.labelKey)}</span> ${n.date}</p><p class="summary">${t(n.summaryKey)}</p><p><a class="button button-secondary" href="${n.link}" target="_blank" rel="noopener noreferrer">${t('newsReadMore')}</a></p></article>`).join('')} 
   renderNews();
+  function renderSupportedCities(){
+    const container=$('#supported-cities-list');
+    if(!container) return;
+    const eventsWithCities = ECLIPSES.filter(e=>Array.isArray(e.cities)&&e.cities.length>0);
+    if(eventsWithCities.length===0){ container.innerHTML = `<p>${t('supportedCitiesNone')}</p>`; return }
+    container.innerHTML = eventsWithCities.map(e=>{
+      const header = `<div class="sc-event-head"><strong>${esc(e.label)}</strong> · ${typeLabel(e.type)} · ${classLabel(e.class)}</div>`;
+      const cities = (e.cities||[]).map(c=>`<li><button class="sc-city-button" data-event="${e.id}" data-lat="${c.lat}" data-lon="${c.lon}" type="button">${esc(c.name)}, ${esc(c.country||'')}</button></li>`).join('');
+      return `<section class="sc-event">${header}<ul class="sc-city-list">${cities}</ul></section>`;
+    }).join('');
+    $$('.sc-city-button').forEach(b=>b.addEventListener('click',()=>{const ev=b.dataset.event;const lat=Number(b.dataset.lat);const lon=Number(b.dataset.lon);chooseEvent(ev);choosePlace({name:b.textContent.trim(),lat:lat,lon:lon,zoom:10})}));
+  }
+  renderSupportedCities();
 }
 document.addEventListener('DOMContentLoaded',init);window.EclipseAtlas={DATASET_VERSION,ECLIPSES};
 })();
