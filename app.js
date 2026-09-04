@@ -63,7 +63,7 @@ function renderBrief(){const e=event(),p=state.place,s=findSupported(p,e);let co
       <dl class="timing-grid"><div><dt>${t('coordinates')}</dt><dd>${p.lat.toFixed(4)}°, ${p.lon.toFixed(4)}°</dd></div><div><dt>${t('datasetStatus')}</dt><dd>${t('notIncluded')}</dd></div></dl>
       <p class="brief-disclaimer">${t('notCoveredText')}</p>
       ${supportedHtml}
-      <div class="missing-hint"><p class="hint">${t('missingCityHint')}</p><p class="hint">${t('matchingExplanation')}</p></div>`
+            <div class="missing-hint"><p class="hint">${t('missingCityHint')} <button class="info-icon" type="button" title="${t('matchingExplanation')}" aria-label="${t('matchingExplanation')}">±0.22°</button></p><p class="hint">${t('matchingExplanation')}</p></div>`
   }
   $('#eclipse-brief').innerHTML=`${content}<div class="brief-actions"><button id="calendar-button" class="button button-primary" type="button" ${p?'':'disabled'}>${t('addCalendar')}</button><a class="button button-secondary" href="${e.source}" target="_blank" rel="noopener noreferrer">${t('viewSource')}</a></div>`;
   // wire up supported city buttons
