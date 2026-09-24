@@ -3,82 +3,73 @@
 
   const style = document.createElement('style');
   style.textContent = `
-    .countdown-card {
-      margin: 1.25rem 0;
-      padding: 1.25rem;
-      border: 1px solid var(--line, rgba(210,230,255,.16));
-      border-radius: .8rem;
-      background: linear-gradient(135deg, var(--panel, #101f33), var(--panel2, #162a43));
-      box-shadow: var(--shadow, 0 24px 70px rgba(0,0,0,.3));
-    }
+    .countdown-card { margin: 1.25rem 0; padding: 1.25rem; border: 1px solid var(--line, rgba(210,230,255,.16)); border-radius: .8rem; background: linear-gradient(135deg, var(--panel, #101f33), var(--panel2, #162a43)); box-shadow: var(--shadow, 0 24px 70px rgba(0,0,0,.3)); }
     .countdown-card h3 { margin-bottom: .35rem; }
     .countdown-card p { color: var(--muted, #aebdd1); }
-    .countdown-time {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(4.5rem, 1fr));
-      gap: .6rem;
-      margin-top: 1rem;
-      max-width: 32rem;
-    }
-    .countdown-unit {
-      padding: .7rem .45rem;
-      text-align: center;
-      border: 1px solid var(--line, rgba(210,230,255,.16));
-      border-radius: .55rem;
-      background: rgba(7,17,31,.32);
-    }
-    .countdown-value { display: block; font-size: clamp(1.4rem, 4vw, 2rem); font-weight: 800; line-height: 1.1; color: var(--ink, #f5f8fc); }
-    .countdown-label { display: block; margin-top: .25rem; font-size: .72rem; color: var(--muted, #aebdd1); text-transform: uppercase; letter-spacing: .08em; }
-    .countdown-finished { color: var(--aqua, #8fe3db); font-weight: 700; margin-top: .8rem; }
+    .countdown-summary { display: grid; gap: .35rem; margin: 0 0 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--line, rgba(210,230,255,.16)); }
+    .countdown-summary strong { color: var(--aqua, #8fe3db); font-size: 1.05rem; }
+    .countdown-time { display: grid; grid-template-columns: repeat(4, minmax(4.5rem, 1fr)); gap: .6rem; margin-top: 1rem; max-width: 32rem; }
+    .countdown-unit { padding: .7rem .45rem; text-align: center; border: 1px solid var(--line, rgba(210,230,255,.16)); border-radius: .55rem; background: rgba(7,17,31,.32); }
+    .countdown-value { display: block; color: var(--ink, #f5f8fc); font-size: clamp(1.4rem, 4vw, 2rem); font-weight: 800; line-height: 1.1; }
+    .countdown-label { display: block; margin-top: .25rem; color: var(--muted, #aebdd1); font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; }
+    .countdown-finished { margin-top: .8rem; color: var(--aqua, #8fe3db) !important; font-weight: 700; }
     @media (max-width: 450px) { .countdown-time { grid-template-columns: repeat(2, 1fr); } }
   `;
   document.head.appendChild(style);
 
-  const target = document.querySelector('#explorer .section-head');
-  if (!target || !window.EclipseAtlas || !Array.isArray(window.EclipseAtlas.ECLIPSES)) return;
+  function start() {
+    const target = document.querySelector('#explorer .section-head');
+    const atlas = window.EclipseAtlas;
+    if (!target || !atlas || !Array.isArray(atlas.ECLIPSES)) return;
 
-  const card = document.createElement('section');
-  card.className = 'countdown-card';
-  card.setAttribute('aria-live', 'polite');
-  card.setAttribute('aria-labelledby', 'countdown-title');
-  card.innerHTML = '<h3 id="countdown-title">Countdown to selected eclipse</h3><p class="countdown-event"></p><div class="countdown-time" role="timer"></div><p class="countdown-finished" hidden>This eclipse has begun or has already passed.</p>';
-  target.after(card);
+    const old = document.querySelector('#countdown-panel');
+    if (old) old.remove();
 
-  const eventText = card.querySelector('.countdown-event');
-  const time = card.querySelector('.countdown-time');
-  const finished = card.querySelector('.countdown-finished');
-  const units = [['days', 86400], ['hours', 3600], ['minutes', 60], ['seconds', 1]];
-  let lastEventId;
+    const card = document.createElement('section');
+    card.id = 'countdown-panel';
+    card.className = 'countdown-card';
+    card.setAttribute('aria-live', 'polite');
+    card.innerHTML = `
+      <div class="countdown-summary">
+        <h3>Countdown to next total solar eclipse</h3>
+        <strong class="countdown-next-event"></strong>
+        <span class="countdown-next-region"></span>
+      </div>
+      <h3>Countdown to selected eclipse</h3>
+      <p class="countdown-event"></p>
+      <div class="countdown-time" role="timer"></div>
+      <p class="countdown-finished" hidden>This eclipse has begun or has already passed.</p>`;
+    target.after(card);
 
-  function selectedEvent() {
-    const id = localStorage.getItem('ea-event') || '2027-02-06';
-    return window.EclipseAtlas.ECLIPSES.find(e => e.id === id) || window.EclipseAtlas.ECLIPSES[0];
-  }
+    const nextEventText = card.querySelector('.countdown-next-event');
+    const nextRegionText = card.querySelector('.countdown-next-region');
+    const eventText = card.querySelector('.countdown-event');
+    const time = card.querySelector('.countdown-time');
+    const finished = card.querySelector('.countdown-finished');
+    const units = [['days', 86400], ['hours', 3600], ['minutes', 60], ['seconds', 1]];
+    let selectedId = '';
+    let nextId = '';
 
-  function render() {
-    const event = selectedEvent();
-    if (!event) return;
-    if (event.id !== lastEventId) {
-      lastEventId = event.id;
-      eventText.textContent = `${event.label} · ${event.type} ${event.class} eclipse (counting to 00:00 UTC)`;
+    const dateValue = e => Date.parse(`${e.date}T00:00:00Z`);
+    const selectedEvent = () => atlas.ECLIPSES.find(e => e.id === (localStorage.getItem('ea-event') || '2027-02-06')) || atlas.ECLIPSES[0];
+    const nextTotal = () => atlas.ECLIPSES.filter(e => e.class === 'solar' && e.type === 'total' && dateValue(e) > Date.now()).sort((a, b) => dateValue(a) - dateValue(b))[0];
+    const format = (seconds, output) => { let value = Math.max(0, Math.floor(seconds)); output.innerHTML = units.map(([label, size]) => { const amount = Math.floor(value / size); value %= size; return `<div class="countdown-unit"><span class="countdown-value">${String(amount).padStart(2, '0')}</span><span class="countdown-label">${label}</span></div>`; }).join(''); };
+
+    function render() {
+      const event = selectedEvent();
+      const total = nextTotal();
+      if (!event || !total) return;
+      if (total.id !== nextId) { nextId = total.id; nextEventText.textContent = `${total.label} · ${total.region}`; nextRegionText.textContent = 'Counting to 00:00 UTC'; }
+      if (event.id !== selectedId) { selectedId = event.id; eventText.textContent = `${event.label} · ${event.type} ${event.class} eclipse (counting to 00:00 UTC)`; }
+      const remaining = Math.floor((dateValue(event) - Date.now()) / 1000);
+      finished.hidden = remaining > 0;
+      if (remaining > 0) format(remaining, time); else time.innerHTML = '';
     }
 
-    const remaining = Math.floor((Date.parse(`${event.date}T00:00:00Z`) - Date.now()) / 1000);
-    if (remaining <= 0) {
-      time.innerHTML = '';
-      finished.hidden = false;
-      return;
-    }
-
-    finished.hidden = true;
-    let value = remaining;
-    time.innerHTML = units.map(([label, seconds]) => {
-      const amount = Math.floor(value / seconds);
-      value %= seconds;
-      return `<div class="countdown-unit"><span class="countdown-value">${String(amount).padStart(2, '0')}</span><span class="countdown-label">${label}</span></div>`;
-    }).join('');
+    render();
+    window.setInterval(render, 1000);
   }
 
-  render();
-  window.setInterval(render, 1000);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+  else start();
 })();
